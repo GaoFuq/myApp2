@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000" >
+	<com.gfq.myvdo.view.VideoView 
+    android:id="@+id/video_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    />
+    
+<include  layout="@layout/video_control" android:id="@+id/video_control"/>
+
+<LinearLayout
+        android:id="@+id/ll_voice"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/voice_seekbar_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone"
+         >
+
+        <ImageView
+            android:id="@+id/btn_voice"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/btn_voice_selector" />
+
+        <SeekBar
+            android:id="@+id/seekbar_voice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxHeight="6dp"
+            android:minHeight="6dp"
+            android:progressDrawable="@drawable/progress_horizontal"
+            android:thumb="@drawable/dot" />
+    </LinearLayout>
+    <LinearLayout 
+        android:id="@+id/ll_buffer"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#3300"
+        android:visibility="gone"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+        <ProgressBar 
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            />
+         <TextView 
+            android:id="@+id/tv_netSpeed"
+            android:paddingLeft="7dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加载中..."
+            android:textColor="#fff"
+            />
+        
+    </LinearLayout>
+</RelativeLayout>
