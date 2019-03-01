@@ -333,7 +333,7 @@ public class MyVedioPlayer extends Activity implements OnClickListener {
 				// 跟新文本的进度
 				tvCurrentTime.setText(util.stringForTime(currentPosition));
 				//跟新系统时间
-				tv_systemTime.setText(getSystemTime());
+				tv_systemTime.setText(util.getSystemTime());
 				
 				//缓存进度更新
 				if(isNetUri) {
@@ -403,10 +403,7 @@ public class MyVedioPlayer extends Activity implements OnClickListener {
 		seekbarVideo.setOnSeekBarChangeListener(new MyVideoSeekBarChangeListener());
 	}
 
-	protected String getSystemTime() {
-		SimpleDateFormat format=new SimpleDateFormat("HH:mm:ss");
-		return format.format(new Date());
-	}
+	
 
 	protected void updateVoice(int p) {
 		audioManage.setStreamVolume(AudioManager.STREAM_MUSIC, p, 0);
@@ -538,5 +535,11 @@ class MyOnInfoListener implements OnInfoListener{
 		}
 
 		return super.onTouchEvent(event);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		handel.removeCallbacksAndMessages(null);
 	}
 }

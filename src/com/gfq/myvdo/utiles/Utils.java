@@ -3,6 +3,8 @@ package com.gfq.myvdo.utiles;
 import android.content.Context;
 import android.net.TrafficStats;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -20,6 +22,11 @@ public class Utils {
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
 
     }
+    
+    public String getSystemTime() {
+		SimpleDateFormat format=new SimpleDateFormat("HH:mm:ss");
+		return format.format(new Date());
+	}
 
     /**
      * 把毫秒转换成：1:20:30这里形式

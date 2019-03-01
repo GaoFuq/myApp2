@@ -35,7 +35,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener{
 	private FrameLayout frameLayout;
 	private RadioGroup radioGroup; 
 	private int position;
-	private boolean isInitedData=false;
+	
 	
 	
 	@Override
@@ -57,9 +57,10 @@ public class MainActivity extends Activity implements OnCheckedChangeListener{
 	
 	private void addPage2List() {
 		list.add(videoNative);
+		list.add(videoNet);
 		list.add(musicNative);
 		list.add(musicNet);
-		list.add(videoNet);
+		
 	}
 	private void initVars() {
 		mContext=MainActivity.this;
@@ -118,9 +119,9 @@ public class MainActivity extends Activity implements OnCheckedChangeListener{
 	}
 	protected BasePage getPage() {
 		BasePage page =list.get(position);
-		if(page!=null&&!isInitedData) {
+		if(page!=null&&!page.isInitedData) {
 			page.initData();
-			isInitedData=true;
+			page.isInitedData=true;
 		}
 		return page;
 		

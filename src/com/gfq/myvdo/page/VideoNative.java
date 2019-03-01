@@ -35,7 +35,7 @@ public class VideoNative extends BasePage implements OnItemClickListener{
 	private Handler handler=new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			if(hasLength(items)) {
-				adapter=new MyVideoNativeAdapter(items,mContext);
+				adapter=new MyVideoNativeAdapter(items,mContext,true);
 				listView.setAdapter(adapter);
 				textView.setVisibility(View.GONE);
 			}else {

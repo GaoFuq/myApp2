@@ -20,9 +20,11 @@ public class MyVideoNativeAdapter extends BaseAdapter {
 	private ArrayList<MediaItem> list;
 	private Utils util=new Utils();
 	private Context mContext;
-	public MyVideoNativeAdapter(ArrayList<MediaItem> list,Context c) {
+	private boolean isVideo;
+	public MyVideoNativeAdapter(ArrayList<MediaItem> list,Context c,boolean isVideo) {
 		this.list=list;
 		mContext=c;
+		this.isVideo=isVideo;
 	}
 	public MyVideoNativeAdapter() {
 		// TODO 自动生成的构造函数存根
@@ -50,7 +52,7 @@ public class MyVideoNativeAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		if(convertView==null) {
-			convertView=View.inflate(mContext, R.layout.item_vedio, null);
+			convertView=View.inflate(mContext, R.layout.item_nativa_vedio, null);
 			holder=new ViewHolder();
 			holder.img=(ImageView) convertView.findViewById(R.id.iv_icon);
 			holder.tv_name=(TextView) convertView.findViewById(R.id.tv_name);
@@ -59,10 +61,14 @@ public class MyVideoNativeAdapter extends BaseAdapter {
 			convertView.setTag(holder);
 		}
 		holder=(ViewHolder) convertView.getTag();
-		holder.img.setImageResource(R.drawable.ic_launcher);
+		holder.img.setBackgroundResource(R.drawable.video_default_icon);
 		holder.tv_name.setText(list.get(position).getName());
 		holder.tv_size.setText(Formatter.formatFileSize(mContext, list.get(position).getSize()));
 		holder.tv_time.setText(util.stringForTime((int)list.get(position).getDuration()));
+		
+		if(!isVideo) {
+			holder.img.setBackgroundResource(R.drawable.music_default_bg);
+		}
 		return convertView;
 	}
 static class ViewHolder{

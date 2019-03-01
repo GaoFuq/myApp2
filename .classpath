@@ -13,5 +13,13 @@
 			<accessrule kind="nonaccessible" pattern="com/android/internal/**"/>
 		</accessrules>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/xUtil3.jar" sourcepath="D:/AZKF/xutils-3.5.0-eclipse/org/xutils">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/D:/AZKF/xutils-3.5.0-javadoc.jar!/"/>
+			<attribute name="source_encoding" value="UTF-8"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/android-support-v7-appcompat.jar"/>
+	<classpathentry kind="lib" path="libs/glide-3.7.0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

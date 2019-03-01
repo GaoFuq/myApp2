@@ -81,7 +81,7 @@
                 android:maxHeight="6dp"
                 android:minHeight="6dp"
                 android:progressDrawable="@drawable/progress_horizontal"
-                android:thumb="@drawable/dot" />
+                android:thumb="@drawable/seek_thumb" />
 
             <TextView
                 android:id="@+id/tv_duration"
