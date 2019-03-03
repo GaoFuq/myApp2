@@ -1,9 +1,18 @@
 package com.gfq.myvdo.activity;
 
+import java.io.File;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import com.gfq.myvdo.R;
+import com.gfq.myvdo.domain.MediaItem;
 import com.gfq.myvdo.service.IMusicPlayerService;
 import com.gfq.myvdo.service.MusicPlayerService;
+import com.gfq.myvdo.utiles.LyricsUtil;
 import com.gfq.myvdo.utiles.Utils;
+import com.gfq.myvdo.view.ShowLyricView;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -29,6 +38,7 @@ import android.widget.Toast;
 
 public class MyMusicPlayer extends Activity implements OnClickListener {
 	protected static final int PROGRESS = 0;// 进度更新
+	private static final int SHOW_LYRIC = 5;
 	private TextView tvMusicName;
 	private TextView tvArtist;
 	private TextView tvTime;
@@ -40,9 +50,10 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 	private Button btnMusicNext;
 	private Button btnMusicLyrics;
 	private ImageView iv_icon;
+	private ShowLyricView showLyricView;
 	private int position;
 	private Utils util = new Utils();
-	private MyReceiver myReceiver;
+	//private MyReceiver myReceiver;
 
 	private IMusicPlayerService service;// 服务的代理类，通过他调用服务的方法
 
@@ -50,7 +61,6 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case PROGRESS:
-
 				try {
 					// 1.得到当前的进度
 					int currentPosition = service.getCurrentPostion();
@@ -64,7 +74,22 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
-
+				break;
+				
+			case SHOW_LYRIC:
+				try {
+					//1.得到当前的进度
+					int currentPosition=service.getCurrentPostion();
+					//2.把进度传入showLyricView.java控件中，并且计算该高亮哪一句
+					showLyricView.setShowNextLyric(currentPosition);
+					//Log.d("currentPosition==", currentPosition+"");
+					//3.发消息更新
+					handler.removeMessages(SHOW_LYRIC);
+					handler.sendEmptyMessage(SHOW_LYRIC);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			
 				break;
 
 			default:
@@ -78,7 +103,8 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.my_music_player);
 
-		registBroadcast();
+		//registBroadcast();
+		initEventBus();
 
 		topAnimation();
 
@@ -90,13 +116,19 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 
 	}
 
-	// 注册广播
-	private void registBroadcast() {
-		myReceiver = new MyReceiver();
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(MusicPlayerService.OPEN_MUSIC);
-		registerReceiver(myReceiver, filter);
+	private void initEventBus() {
+		//1.注册EventBus
+		EventBus.getDefault().register(this);//注册当前类
+		
 	}
+
+//	// 注册广播
+//	private void registBroadcast() {
+//		myReceiver = new MyReceiver();
+//		IntentFilter filter = new IntentFilter();
+//		filter.addAction(MusicPlayerService.OPEN_MUSIC);
+//		registerReceiver(myReceiver, filter);
+//	}
 
 	private void initView() {
 		tvMusicName = (TextView) findViewById(R.id.tv_music_name);
@@ -109,6 +141,7 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 		btnMusicStartPause = (Button) findViewById(R.id.btn_music_start_pause);
 		btnMusicNext = (Button) findViewById(R.id.btn_music_next);
 		btnMusicLyrics = (Button) findViewById(R.id.btn_music_lyrics);
+		showLyricView=(ShowLyricView) findViewById(R.id.showLyricView);
 
 		btnMusicPlaymode.setOnClickListener(this);
 		btnMusicPre.setOnClickListener(this);
@@ -190,6 +223,7 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 			if (service != null) {
 				try {
 					service.pre();
+					btnMusicStartPause.setBackgroundResource(R.drawable.btn_pause_selector);
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
@@ -213,6 +247,7 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 			if (service != null) {
 				try {
 					service.next();
+					btnMusicStartPause.setBackgroundResource(R.drawable.btn_pause_selector);
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
@@ -277,7 +312,6 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 			} else {
 				btnMusicPlaymode.setBackgroundResource(R.drawable.btn_playmode_normal_selector);
 			}
-			service.setPlayMode(playMode);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -286,26 +320,68 @@ public class MyMusicPlayer extends Activity implements OnClickListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		// 取消注册的广播
-		if (myReceiver != null) {
-			unregisterReceiver(myReceiver);
-			myReceiver = null;
+//		// 取消注册的广播
+//		if (myReceiver != null) {
+//			unregisterReceiver(myReceiver);
+//			myReceiver = null;
+//		}
+		
+		//2.取消注册EventBus
+		EventBus.getDefault().unregister(this);
+		//解绑服务
+		if(conn!=null) {
+			unbindService(conn);
+			conn=null;
 		}
-
 		// 移除所有消息
 		handler.removeCallbacksAndMessages(null);
 
 	}
 
-	class MyReceiver extends BroadcastReceiver {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
+//	class MyReceiver extends BroadcastReceiver {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			
+//			showData(null);
+//			//發消息，開啓歌詞同步
+//			
+//			
+//			
+//		}
+		//3.订阅方法
+		@Subscribe(threadMode=ThreadMode.MAIN,sticky=false,priority=0)
+		public void showData(MediaItem item) {
 			showMusicPlayerViewData();
 			checkPlayMode();
+			showLyric();
 		}
 
-	}
+		private void showLyric() {
+			//解析歌词工具
+			LyricsUtil lyricsUtil=new LyricsUtil();
+			
+			try {
+				//传入歌词文件
+				String path=service.getMusicPath();//例如:sdCard/music/abc.mp3
+				//截取路径的前面部分出来:sdCard/music/abc
+				path=path.substring(0,path.lastIndexOf("."));
+				File file=new File(path+".lrc");
+				if(!file.exists()) {
+					file=new File(path+".txt");
+				}
+				lyricsUtil.readLyricFile(file);//开始解析歌词文件
+				showLyricView.setLyrics(lyricsUtil.getLyrics());
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			if(lyricsUtil.isExistLyric()) {
+				handler.sendEmptyMessage(SHOW_LYRIC);	
+			}
+				
+		}
+
+	
 
 	public void showMusicPlayerViewData() {
 		try {

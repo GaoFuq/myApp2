@@ -2,6 +2,8 @@ package com.gfq.myvdo.service;
 
 import java.util.ArrayList;
 
+import org.greenrobot.eventbus.EventBus;
+
 import com.gfq.myvdo.R;
 import com.gfq.myvdo.activity.MyMusicPlayer;
 import com.gfq.myvdo.activity.MyVedioPlayer;
@@ -163,7 +165,7 @@ public class MusicPlayerService extends Service {
 		}
 	};
 	private int position;
-	private boolean isSamePosition = false;
+	//private boolean isSamePosition = false;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -181,9 +183,9 @@ public class MusicPlayerService extends Service {
 			item = items.get(p);
 
 			if (mediaPlayer != null) {
-				// mediaPlayer.release();//释放资源
 				mediaPlayer.reset();// 重置
-
+				mediaPlayer.release();//释放资源
+			
 			}
 
 			try {
@@ -423,7 +425,8 @@ public class MusicPlayerService extends Service {
 		@Override
 		public void onPrepared(MediaPlayer mp) {
 			// 通知Activity获取信息--广播
-			notifyChange(OPEN_MUSIC);
+			//notifyChange(OPEN_MUSIC);
+			EventBus.getDefault().post(item);
 			start();
 		}
 
@@ -452,9 +455,9 @@ public class MusicPlayerService extends Service {
 	 * 根据动作发广播
 	 * 
 	 * @param action
-	 */
-	private void notifyChange(String action) {
-		Intent in = new Intent(action);
-		sendBroadcast(in);
-	}
+//	 */
+//	private void notifyChange(String action) {
+//		Intent in = new Intent(action);
+//		sendBroadcast(in);
+//	}
 }
